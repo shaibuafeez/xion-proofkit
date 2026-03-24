@@ -8,6 +8,7 @@ import { GasPrice } from "@cosmjs/stargate";
 import { SigningProofKit } from "../proofkit";
 import { ProofKit } from "../proofkit";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { splitList, parseNum } from "./parse";
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -66,24 +67,15 @@ function optionalArg(args: string[], flag: string, envKey?: string, fallback?: s
   return fallback;
 }
 
-function splitList(raw: string): string[] {
-  const items = raw.split(",").map(s => s.trim()).filter(Boolean);
-  if (items.length === 0) {
-    console.error("Expected at least one value in comma-separated list");
-    process.exit(1);
-  }
-  return items;
-}
-
 function optionalNum(args: string[], flag: string): number | undefined {
   const idx = args.indexOf(flag);
   if (idx === -1 || !args[idx + 1]) return undefined;
-  const n = parseInt(args[idx + 1], 10);
-  if (isNaN(n)) {
+  try {
+    return parseNum(args[idx + 1]);
+  } catch {
     console.error(`Invalid number for ${flag}: "${args[idx + 1]}"`);
     process.exit(1);
   }
-  return n;
 }
 
 function loadMnemonic(args: string[]): string {
