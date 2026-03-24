@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "vitest run",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build"
   },
@@ -37,11 +38,12 @@
   "author": "",
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.32.4",
-    "@cosmjs/stargate": "^0.32.4",
-    "@cosmjs/proto-signing": "^0.32.4"
+    "@cosmjs/proto-signing": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4"
   },
   "devDependencies": {
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.1"
   },
   "license": "MIT"
 }

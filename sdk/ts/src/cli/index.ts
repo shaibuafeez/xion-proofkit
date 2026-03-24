@@ -66,10 +66,24 @@ function optionalArg(args: string[], flag: string, envKey?: string, fallback?: s
   return fallback;
 }
 
+function splitList(raw: string): string[] {
+  const items = raw.split(",").map(s => s.trim()).filter(Boolean);
+  if (items.length === 0) {
+    console.error("Expected at least one value in comma-separated list");
+    process.exit(1);
+  }
+  return items;
+}
+
 function optionalNum(args: string[], flag: string): number | undefined {
   const idx = args.indexOf(flag);
-  if (idx !== -1 && args[idx + 1]) return parseInt(args[idx + 1], 10);
-  return undefined;
+  if (idx === -1 || !args[idx + 1]) return undefined;
+  const n = parseInt(args[idx + 1], 10);
+  if (isNaN(n)) {
+    console.error(`Invalid number for ${flag}: "${args[idx + 1]}"`);
+    process.exit(1);
+  }
+  return n;
 }
 
 function loadMnemonic(args: string[]): string {
@@ -152,7 +166,7 @@ async function registerSchema(args: string[]) {
   const name = requireArg(args, "--name");
   const description = requireArg(args, "--description");
   const verifierContract = optionalArg(args, "--verifier-contract") ?? addresses.verifier;
-  const types = requireArg(args, "--credential-types").split(",");
+  const types = splitList(requireArg(args, "--credential-types"));
 
   console.log(`Registering schema "${schemaId}"...`);
   const result = await pk.registry.registerSchema(schemaId, name, description, verifierContract, types);
@@ -167,7 +181,7 @@ async function registerIssuer(args: string[]) {
   const issuer = requireArg(args, "--issuer");
   const name = requireArg(args, "--name");
   const description = requireArg(args, "--description");
-  const types = requireArg(args, "--credential-types").split(",");
+  const types = splitList(requireArg(args, "--credential-types"));
 
   console.log(`Registering issuer "${name}"...`);
   const result = await pk.issuerRegistry.registerIssuer(issuer, name, description, types);
@@ -196,7 +210,7 @@ async function verify(args: string[]) {
   const subject = requireArg(args, "--subject");
   const issuer = requireArg(args, "--issuer");
   const proof = requireArg(args, "--proof");
-  const publicInputs = requireArg(args, "--public-inputs").split(",");
+  const publicInputs = splitList(requireArg(args, "--public-inputs"));
   const expiresAt = optionalNum(args, "--expires-at");
 
   console.log(`Submitting ZK verification for ${subject}...`);
