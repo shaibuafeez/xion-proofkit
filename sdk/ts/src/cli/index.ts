@@ -10,6 +10,48 @@ import { ProofKit } from "../proofkit";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { splitList, parseNum } from "./parse";
 
+// ── Output ─────────────────────────────────────────────────────────
+
+let jsonMode = false;
+
+function output(data: Record<string, unknown>): void {
+  if (jsonMode) {
+    console.log(JSON.stringify(data));
+  } else {
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+        console.log(`${key}:`);
+        for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+          console.log(`  ${k}: ${v}`);
+        }
+      } else if (Array.isArray(value)) {
+        if (value.length === 0) {
+          console.log(`No ${key} found.`);
+        } else {
+          for (const item of value) {
+            if (typeof item === "object" && item !== null) {
+              const parts = Object.entries(item).map(([k, v]) => `${k}=${v}`).join(", ");
+              console.log(`  ${parts}`);
+            } else {
+              console.log(`  ${item}`);
+            }
+          }
+        }
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
+  }
+}
+
+function outputError(error: string, code?: string): void {
+  if (jsonMode) {
+    console.error(JSON.stringify({ error, code: code ?? "ERROR" }));
+  } else {
+    console.error(`Error: ${error}`);
+  }
+}
+
 // ── Helpers ────────────────────────────────────────────────────────
 
 function usage(): never {
@@ -37,6 +79,7 @@ GLOBAL OPTIONS:
   --keyfile <path>    Path to file containing mnemonic (or PROOFKIT_KEYFILE env)
   --gas-price <p>     Gas price (default: 0.025uxion)
   --prefix <p>        Bech32 prefix (default: xion)
+  --json              Output results as JSON (for scripting)
 
 AUTHENTICATION:
   The signer mnemonic is read from (in order):
@@ -56,7 +99,7 @@ function requireArg(args: string[], flag: string, envKey?: string): string {
   const idx = args.indexOf(flag);
   if (idx !== -1 && args[idx + 1]) return args[idx + 1];
   if (envKey && process.env[envKey]) return process.env[envKey]!;
-  console.error(`Missing required: ${flag}${envKey ? ` (or ${envKey} env)` : ""}`);
+  outputError(`Missing required: ${flag}${envKey ? ` (or ${envKey} env)` : ""}`, "MISSING_ARG");
   process.exit(1);
 }
 
@@ -73,22 +116,20 @@ function optionalNum(args: string[], flag: string): number | undefined {
   try {
     return parseNum(args[idx + 1]);
   } catch {
-    console.error(`Invalid number for ${flag}: "${args[idx + 1]}"`);
+    outputError(`Invalid number for ${flag}: "${args[idx + 1]}"`, "INVALID_INPUT");
     process.exit(1);
   }
 }
 
 function loadMnemonic(args: string[]): string {
-  // 1. Keyfile (flag or env)
   const keyfile = optionalArg(args, "--keyfile", "PROOFKIT_KEYFILE");
   if (keyfile) {
     return readFileSync(resolve(keyfile), "utf-8").trim();
   }
-  // 2. Environment variable
   if (process.env.PROOFKIT_MNEMONIC) {
     return process.env.PROOFKIT_MNEMONIC;
   }
-  console.error("Missing mnemonic: set --keyfile <path>, PROOFKIT_KEYFILE, or PROOFKIT_MNEMONIC env");
+  outputError("Missing mnemonic: set --keyfile <path>, PROOFKIT_KEYFILE, or PROOFKIT_MNEMONIC env", "MISSING_AUTH");
   process.exit(1);
 }
 
@@ -128,8 +169,10 @@ async function deploy(args: string[]) {
   const verPath = requireArg(args, "--wasm-verifier");
   const issPath = requireArg(args, "--wasm-issuers");
 
-  console.log("Uploading and instantiating contracts...");
-  console.log(`  Deployer: ${sender}`);
+  if (!jsonMode) {
+    console.log("Uploading and instantiating contracts...");
+    console.log(`  Deployer: ${sender}`);
+  }
 
   const wasm = {
     credentialRegistry: new Uint8Array(readFileSync(resolve(regPath))),
@@ -139,14 +182,12 @@ async function deploy(args: string[]) {
 
   const { addresses } = await SigningProofKit.deploy(client, sender, wasm);
 
-  console.log("\nDeployed successfully!");
-  console.log(`  Credential Registry: ${addresses.credentialRegistry}`);
-  console.log(`  Verifier:            ${addresses.verifier}`);
-  console.log(`  Issuer Registry:     ${addresses.issuerRegistry}`);
-  console.log("\nExport for future commands:");
-  console.log(`  export PROOFKIT_REGISTRY=${addresses.credentialRegistry}`);
-  console.log(`  export PROOFKIT_VERIFIER=${addresses.verifier}`);
-  console.log(`  export PROOFKIT_ISSUERS=${addresses.issuerRegistry}`);
+  output({
+    deployer: sender,
+    credential_registry: addresses.credentialRegistry,
+    verifier: addresses.verifier,
+    issuer_registry: addresses.issuerRegistry,
+  });
 }
 
 async function registerSchema(args: string[]) {
@@ -160,9 +201,9 @@ async function registerSchema(args: string[]) {
   const verifierContract = optionalArg(args, "--verifier-contract") ?? addresses.verifier;
   const types = splitList(requireArg(args, "--credential-types"));
 
-  console.log(`Registering schema "${schemaId}"...`);
+  if (!jsonMode) console.log(`Registering schema "${schemaId}"...`);
   const result = await pk.registry.registerSchema(schemaId, name, description, verifierContract, types);
-  console.log(`Done. TX: ${result.transactionHash}`);
+  output({ schema_id: schemaId, tx: result.transactionHash });
 }
 
 async function registerIssuer(args: string[]) {
@@ -175,9 +216,9 @@ async function registerIssuer(args: string[]) {
   const description = requireArg(args, "--description");
   const types = splitList(requireArg(args, "--credential-types"));
 
-  console.log(`Registering issuer "${name}"...`);
+  if (!jsonMode) console.log(`Registering issuer "${name}"...`);
   const result = await pk.issuerRegistry.registerIssuer(issuer, name, description, types);
-  console.log(`Done. TX: ${result.transactionHash}`);
+  output({ issuer, name, tx: result.transactionHash });
 }
 
 async function revokeIssuer(args: string[]) {
@@ -188,9 +229,9 @@ async function revokeIssuer(args: string[]) {
   const issuer = requireArg(args, "--issuer");
   const reason = requireArg(args, "--reason");
 
-  console.log(`Revoking issuer ${issuer}...`);
+  if (!jsonMode) console.log(`Revoking issuer ${issuer}...`);
   const result = await pk.issuerRegistry.revokeIssuer(issuer, reason);
-  console.log(`Done. TX: ${result.transactionHash}`);
+  output({ issuer, reason, tx: result.transactionHash });
 }
 
 async function verify(args: string[]) {
@@ -205,9 +246,9 @@ async function verify(args: string[]) {
   const publicInputs = splitList(requireArg(args, "--public-inputs"));
   const expiresAt = optionalNum(args, "--expires-at");
 
-  console.log(`Submitting ZK verification for ${subject}...`);
+  if (!jsonMode) console.log(`Submitting ZK verification for ${subject}...`);
   const result = await pk.verifier.verifyCredential(schemaId, subject, issuer, proof, publicInputs, expiresAt);
-  console.log(`Done. TX: ${result.transactionHash}`);
+  output({ schema_id: schemaId, subject, issuer, tx: result.transactionHash });
 }
 
 async function verifyEmail(args: string[]) {
@@ -223,11 +264,11 @@ async function verifyEmail(args: string[]) {
   const emailHeaders = requireArg(args, "--email-headers");
   const expiresAt = optionalNum(args, "--expires-at");
 
-  console.log(`Submitting email/DKIM verification for ${subject}...`);
+  if (!jsonMode) console.log(`Submitting email/DKIM verification for ${subject}...`);
   const result = await pk.verifier.verifyEmailCredential(
     schemaId, subject, issuer, emailDomain, dkimSignature, emailHeaders, expiresAt,
   );
-  console.log(`Done. TX: ${result.transactionHash}`);
+  output({ schema_id: schemaId, subject, issuer, email_domain: emailDomain, tx: result.transactionHash });
 }
 
 async function isVerified(args: string[]) {
@@ -238,8 +279,12 @@ async function isVerified(args: string[]) {
   const subject = requireArg(args, "--subject");
   const schemaId = requireArg(args, "--schema-id");
 
-  const verified = await pk.isVerified(subject, schemaId);
-  console.log(`Verified: ${verified}`);
+  const result = await pk.registry.isVerified(subject, schemaId);
+  output({
+    verified: result.verified,
+    proof_id: result.proof_id,
+    expires_at: result.expires_at,
+  });
 }
 
 async function isAuthorized(args: string[]) {
@@ -250,8 +295,11 @@ async function isAuthorized(args: string[]) {
   const issuer = requireArg(args, "--issuer");
   const credType = requireArg(args, "--credential-type");
 
-  const authorized = await pk.isIssuerAuthorized(issuer, credType);
-  console.log(`Authorized: ${authorized}`);
+  const result = await pk.issuerRegistry.isAuthorized(issuer, credType);
+  output({
+    authorized: result.authorized,
+    issuer_name: result.issuer_name,
+  });
 }
 
 async function listSchemas(args: string[]) {
@@ -263,13 +311,7 @@ async function listSchemas(args: string[]) {
   const limit = optionalNum(args, "--limit");
 
   const result = await pk.registry.listSchemas(startAfter, limit);
-  if (result.schemas.length === 0) {
-    console.log("No schemas registered.");
-    return;
-  }
-  for (const s of result.schemas) {
-    console.log(`  ${s.schema_id}: ${s.name} (types: ${s.credential_types.join(", ")}, active: ${s.active})`);
-  }
+  output({ schemas: result.schemas });
 }
 
 async function listIssuers(args: string[]) {
@@ -281,13 +323,7 @@ async function listIssuers(args: string[]) {
   const limit = optionalNum(args, "--limit");
 
   const result = await pk.issuerRegistry.listIssuers(startAfter, limit);
-  if (result.issuers.length === 0) {
-    console.log("No issuers registered.");
-    return;
-  }
-  for (const iss of result.issuers) {
-    console.log(`  ${iss.address}: ${iss.name} (types: ${iss.credential_types.join(", ")}, active: ${iss.active})`);
-  }
+  output({ issuers: result.issuers });
 }
 
 async function showConfig(args: string[]) {
@@ -296,16 +332,21 @@ async function showConfig(args: string[]) {
   const pk = new ProofKit(client, addresses);
 
   const result = await pk.verifier.getConfig();
-  console.log("Verifier Config:");
-  console.log(`  Admin:               ${result.config.admin}`);
-  console.log(`  Credential Registry: ${result.config.credential_registry}`);
-  console.log(`  Issuer Registry:     ${result.config.issuer_registry}`);
+  output({
+    admin: result.config.admin,
+    credential_registry: result.config.credential_registry,
+    issuer_registry: result.config.issuer_registry,
+  });
 }
 
 // ── Main ───────────────────────────────────────────────────────────
 
 async function main() {
   const args = process.argv.slice(2);
+
+  // Check for --json flag before anything else
+  jsonMode = args.includes("--json");
+
   const command = args[0];
 
   if (!command || command === "--help" || command === "-h") usage();
@@ -324,11 +365,12 @@ async function main() {
       case "list-issuers":     await listIssuers(args); break;
       case "config":           await showConfig(args); break;
       default:
-        console.error(`Unknown command: ${command}`);
-        usage();
+        outputError(`Unknown command: ${command}`, "UNKNOWN_COMMAND");
+        if (!jsonMode) usage();
+        process.exit(1);
     }
   } catch (err: any) {
-    console.error(`Error: ${err.message}`);
+    outputError(err.message, "EXECUTION_ERROR");
     process.exit(1);
   }
 }
