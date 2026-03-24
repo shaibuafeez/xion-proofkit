@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExecuteMsg",
+  "oneOf": [
+    {
+      "description": "Verify a ZK credential proof via XION's ZK Module.",
+      "type": "object",
+      "required": [
+        "verify_credential"
+      ],
+      "properties": {
+        "verify_credential": {
+          "type": "object",
+          "required": [
+            "issuer",
+            "proof",
+            "public_inputs",
+            "schema_id",
+            "subject"
+          ],
+          "properties": {
+            "expires_at": {
+              "description": "Optional expiration for the proof record.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "issuer": {
+              "description": "The issuer who signed the credential.",
+              "type": "string"
+            },
+            "proof": {
+              "description": "Raw ZK proof bytes (base64-encoded).",
+              "type": "string"
+            },
+            "public_inputs": {
+              "description": "Public inputs for the ZK verification (base64-encoded).",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "schema_id": {
+              "description": "The schema to verify against.",
+              "type": "string"
+            },
+            "subject": {
+              "description": "The subject whose credential is being verified.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Verify an email-based credential using XION's DKIM Module.",
+      "type": "object",
+      "required": [
+        "verify_email_credential"
+      ],
+      "properties": {
+        "verify_email_credential": {
+          "type": "object",
+          "required": [
+            "dkim_signature",
+            "email_domain",
+            "email_headers",
+            "issuer",
+            "schema_id",
+            "subject"
+          ],
+          "properties": {
+            "dkim_signature": {
+              "description": "DKIM signature data (base64-encoded).",
+              "type": "string"
+            },
+            "email_domain": {
+              "description": "The email domain to verify (e.g., \"company.com\").",
+              "type": "string"
+            },
+            "email_headers": {
+              "description": "The email headers used for DKIM verification.",
+              "type": "string"
+            },
+            "expires_at": {
+              "description": "Optional expiration for the proof record.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "issuer": {
+              "description": "The issuer who signed the credential.",
+              "type": "string"
+            },
+            "schema_id": {
+              "description": "The schema to verify against.",
+              "type": "string"
+            },
+            "subject": {
+              "description": "The subject whose credential is being verified.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Batch-verify multiple credentials in a single transaction.",
+      "type": "object",
+      "required": [
+        "batch_verify"
+      ],
+      "properties": {
+        "batch_verify": {
+          "type": "object",
+          "required": [
+            "verifications"
+          ],
+          "properties": {
+            "verifications": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/VerificationRequest"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Update the admin address (admin only).",
+      "type": "object",
+      "required": [
+        "update_admin"
+      ],
+      "properties": {
+        "update_admin": {
+          "type": "object",
+          "required": [
+            "new_admin"
+          ],
+          "properties": {
+            "new_admin": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Update the credential registry address (admin only).",
+      "type": "object",
+      "required": [
+        "update_registry"
+      ],
+      "properties": {
+        "update_registry": {
+          "type": "object",
+          "required": [
+            "credential_registry"
+          ],
+          "properties": {
+            "credential_registry": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "definitions": {
+    "VerificationRequest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "zk_proof"
+          ],
+          "properties": {
+            "zk_proof": {
+              "type": "object",
+              "required": [
+                "issuer",
+                "proof",
+                "public_inputs",
+                "schema_id",
+                "subject"
+              ],
+              "properties": {
+                "expires_at": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "issuer": {
+                  "type": "string"
+                },
+                "proof": {
+                  "type": "string"
+                },
+                "public_inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "schema_id": {
+                  "type": "string"
+                },
+                "subject": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "email_proof"
+          ],
+          "properties": {
+            "email_proof": {
+              "type": "object",
+              "required": [
+                "dkim_signature",
+                "email_domain",
+                "email_headers",
+                "issuer",
+                "schema_id",
+                "subject"
+              ],
+              "properties": {
+                "dkim_signature": {
+                  "type": "string"
+                },
+                "email_domain": {
+                  "type": "string"
+                },
+                "email_headers": {
+                  "type": "string"
+                },
+                "expires_at": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "issuer": {
+                  "type": "string"
+                },
+                "schema_id": {
+                  "type": "string"
+                },
+                "subject": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

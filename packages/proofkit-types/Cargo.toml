@@ -1,0 +1,12 @@
+[package]
+name = "proofkit-types"
+version = "0.1.0"
+edition = "2021"
+description = "Shared types for ProofKit verified credential SDK"
+
+[dependencies]
+cosmwasm-std = { workspace = true }
+cosmwasm-schema = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }

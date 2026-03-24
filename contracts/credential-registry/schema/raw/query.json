@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QueryMsg",
+  "oneOf": [
+    {
+      "description": "Check if a subject has a valid (non-revoked, non-expired) proof for a schema.",
+      "type": "object",
+      "required": [
+        "is_verified"
+      ],
+      "properties": {
+        "is_verified": {
+          "type": "object",
+          "required": [
+            "schema_id",
+            "subject"
+          ],
+          "properties": {
+            "schema_id": {
+              "type": "string"
+            },
+            "subject": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Get a specific proof record by ID.",
+      "type": "object",
+      "required": [
+        "proof_record"
+      ],
+      "properties": {
+        "proof_record": {
+          "type": "object",
+          "required": [
+            "proof_id"
+          ],
+          "properties": {
+            "proof_id": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "List all proof records for a subject.",
+      "type": "object",
+      "required": [
+        "proofs_by_subject"
+      ],
+      "properties": {
+        "proofs_by_subject": {
+          "type": "object",
+          "required": [
+            "subject"
+          ],
+          "properties": {
+            "limit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "start_after": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "subject": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Get schema details.",
+      "type": "object",
+      "required": [
+        "schema"
+      ],
+      "properties": {
+        "schema": {
+          "type": "object",
+          "required": [
+            "schema_id"
+          ],
+          "properties": {
+            "schema_id": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "List all registered schemas.",
+      "type": "object",
+      "required": [
+        "list_schemas"
+      ],
+      "properties": {
+        "list_schemas": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "start_after": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Get the current admin address.",
+      "type": "object",
+      "required": [
+        "admin"
+      ],
+      "properties": {
+        "admin": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

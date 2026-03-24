@@ -1,0 +1,37 @@
+[workspace]
+members = [
+    "packages/proofkit-types",
+    "contracts/credential-registry",
+    "contracts/verifier",
+    "contracts/issuer-registry",
+    "tests/integration",
+]
+resolver = "2"
+
+[workspace.dependencies]
+cosmwasm-std = "2.0"
+cosmwasm-schema = "2.0"
+cw-storage-plus = "2.0"
+cw2 = "2.0"
+schemars = "0.8"
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+thiserror = "1.0"
+cosmwasm-crypto = "2.0"
+
+cw-multi-test = "2.0"
+
+proofkit-types = { path = "packages/proofkit-types" }
+credential-registry = { path = "contracts/credential-registry", features = ["library"] }
+verifier = { path = "contracts/verifier", features = ["library"] }
+issuer-registry = { path = "contracts/issuer-registry", features = ["library"] }
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = "abort"
+incremental = false
+overflow-checks = true

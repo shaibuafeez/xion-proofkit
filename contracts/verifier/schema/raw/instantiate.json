@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InstantiateMsg",
+  "type": "object",
+  "required": [
+    "credential_registry",
+    "issuer_registry"
+  ],
+  "properties": {
+    "admin": {
+      "description": "Optional admin address; defaults to the instantiator.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "credential_registry": {
+      "description": "Address of the credential registry contract for recording proofs.",
+      "type": "string"
+    },
+    "issuer_registry": {
+      "description": "Address of the issuer registry contract for authorization checks.",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

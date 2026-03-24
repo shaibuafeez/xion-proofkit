@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IsAuthorizedResponse",
+  "type": "object",
+  "required": [
+    "authorized"
+  ],
+  "properties": {
+    "authorized": {
+      "type": "boolean"
+    },
+    "issuer_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

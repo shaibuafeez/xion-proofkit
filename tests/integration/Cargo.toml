@@ -1,0 +1,14 @@
+[package]
+name = "proofkit-integration-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+cosmwasm-std = { workspace = true }
+cosmwasm-schema = { workspace = true }
+cw-multi-test = { workspace = true }
+proofkit-types = { workspace = true }
+credential-registry = { workspace = true }
+verifier = { workspace = true }
+issuer-registry = { workspace = true }

@@ -1,0 +1,555 @@
+{
+  "contract_name": "issuer-registry",
+  "contract_version": "0.1.0",
+  "idl_version": "1.0.0",
+  "instantiate": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "InstantiateMsg",
+    "type": "object",
+    "properties": {
+      "admin": {
+        "description": "Optional admin address; defaults to the instantiator.",
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "additionalProperties": false
+  },
+  "execute": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ExecuteMsg",
+    "oneOf": [
+      {
+        "description": "Register a new trusted credential issuer (admin only).",
+        "type": "object",
+        "required": [
+          "register_issuer"
+        ],
+        "properties": {
+          "register_issuer": {
+            "type": "object",
+            "required": [
+              "credential_types",
+              "description",
+              "issuer",
+              "name"
+            ],
+            "properties": {
+              "credential_types": {
+                "description": "Credential types this issuer is authorized to validate.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "description": {
+                "description": "Description of the issuer organization.",
+                "type": "string"
+              },
+              "issuer": {
+                "description": "The issuer's on-chain address.",
+                "type": "string"
+              },
+              "name": {
+                "description": "Human-readable name for the issuer.",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "Revoke a previously registered issuer (admin only).",
+        "type": "object",
+        "required": [
+          "revoke_issuer"
+        ],
+        "properties": {
+          "revoke_issuer": {
+            "type": "object",
+            "required": [
+              "issuer",
+              "reason"
+            ],
+            "properties": {
+              "issuer": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "Update issuer details (admin only).",
+        "type": "object",
+        "required": [
+          "update_issuer"
+        ],
+        "properties": {
+          "update_issuer": {
+            "type": "object",
+            "required": [
+              "issuer"
+            ],
+            "properties": {
+              "credential_types": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "Update the admin address (admin only).",
+        "type": "object",
+        "required": [
+          "update_admin"
+        ],
+        "properties": {
+          "update_admin": {
+            "type": "object",
+            "required": [
+              "new_admin"
+            ],
+            "properties": {
+              "new_admin": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
+  },
+  "query": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "QueryMsg",
+    "oneOf": [
+      {
+        "description": "Check if an issuer is authorized for a specific credential type.",
+        "type": "object",
+        "required": [
+          "is_authorized"
+        ],
+        "properties": {
+          "is_authorized": {
+            "type": "object",
+            "required": [
+              "credential_type",
+              "issuer"
+            ],
+            "properties": {
+              "credential_type": {
+                "type": "string"
+              },
+              "issuer": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "Get details of a specific issuer.",
+        "type": "object",
+        "required": [
+          "issuer"
+        ],
+        "properties": {
+          "issuer": {
+            "type": "object",
+            "required": [
+              "issuer"
+            ],
+            "properties": {
+              "issuer": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "List all registered issuers.",
+        "type": "object",
+        "required": [
+          "list_issuers"
+        ],
+        "properties": {
+          "list_issuers": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "uint32",
+                "minimum": 0.0
+              },
+              "start_after": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "List issuers authorized for a specific credential type.",
+        "type": "object",
+        "required": [
+          "issuers_by_type"
+        ],
+        "properties": {
+          "issuers_by_type": {
+            "type": "object",
+            "required": [
+              "credential_type"
+            ],
+            "properties": {
+              "credential_type": {
+                "type": "string"
+              },
+              "limit": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "format": "uint32",
+                "minimum": 0.0
+              },
+              "start_after": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "description": "Get the current admin address.",
+        "type": "object",
+        "required": [
+          "admin"
+        ],
+        "properties": {
+          "admin": {
+            "type": "object",
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
+  },
+  "migrate": null,
+  "sudo": null,
+  "responses": {
+    "admin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AdminResponse",
+      "type": "object",
+      "required": [
+        "admin"
+      ],
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/Addr"
+        }
+      },
+      "additionalProperties": false,
+      "definitions": {
+        "Addr": {
+          "description": "A human readable address.\n\nIn Cosmos, this is typically bech32 encoded. But for multi-chain smart contracts no assumptions should be made other than being UTF-8 encoded and of reasonable length.\n\nThis type represents a validated address. It can be created in the following ways 1. Use `Addr::unchecked(input)` 2. Use `let checked: Addr = deps.api.addr_validate(input)?` 3. Use `let checked: Addr = deps.api.addr_humanize(canonical_addr)?` 4. Deserialize from JSON. This must only be done from JSON that was validated before such as a contract's state. `Addr` must not be used in messages sent by the user because this would result in unvalidated instances.\n\nThis type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.",
+          "type": "string"
+        }
+      }
+    },
+    "is_authorized": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IsAuthorizedResponse",
+      "type": "object",
+      "required": [
+        "authorized"
+      ],
+      "properties": {
+        "authorized": {
+          "type": "boolean"
+        },
+        "issuer_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "issuer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IssuerResponse",
+      "type": "object",
+      "required": [
+        "issuer"
+      ],
+      "properties": {
+        "issuer": {
+          "$ref": "#/definitions/IssuerRecord"
+        }
+      },
+      "additionalProperties": false,
+      "definitions": {
+        "Addr": {
+          "description": "A human readable address.\n\nIn Cosmos, this is typically bech32 encoded. But for multi-chain smart contracts no assumptions should be made other than being UTF-8 encoded and of reasonable length.\n\nThis type represents a validated address. It can be created in the following ways 1. Use `Addr::unchecked(input)` 2. Use `let checked: Addr = deps.api.addr_validate(input)?` 3. Use `let checked: Addr = deps.api.addr_humanize(canonical_addr)?` 4. Deserialize from JSON. This must only be done from JSON that was validated before such as a contract's state. `Addr` must not be used in messages sent by the user because this would result in unvalidated instances.\n\nThis type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.",
+          "type": "string"
+        },
+        "IssuerRecord": {
+          "type": "object",
+          "required": [
+            "active",
+            "address",
+            "credential_types",
+            "description",
+            "name",
+            "registered_at"
+          ],
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "address": {
+              "$ref": "#/definitions/Addr"
+            },
+            "credential_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "registered_at": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "revocation_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "revoked_at": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "issuers_by_type": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IssuersResponse",
+      "type": "object",
+      "required": [
+        "issuers"
+      ],
+      "properties": {
+        "issuers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssuerRecord"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "definitions": {
+        "Addr": {
+          "description": "A human readable address.\n\nIn Cosmos, this is typically bech32 encoded. But for multi-chain smart contracts no assumptions should be made other than being UTF-8 encoded and of reasonable length.\n\nThis type represents a validated address. It can be created in the following ways 1. Use `Addr::unchecked(input)` 2. Use `let checked: Addr = deps.api.addr_validate(input)?` 3. Use `let checked: Addr = deps.api.addr_humanize(canonical_addr)?` 4. Deserialize from JSON. This must only be done from JSON that was validated before such as a contract's state. `Addr` must not be used in messages sent by the user because this would result in unvalidated instances.\n\nThis type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.",
+          "type": "string"
+        },
+        "IssuerRecord": {
+          "type": "object",
+          "required": [
+            "active",
+            "address",
+            "credential_types",
+            "description",
+            "name",
+            "registered_at"
+          ],
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "address": {
+              "$ref": "#/definitions/Addr"
+            },
+            "credential_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "registered_at": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "revocation_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "revoked_at": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "list_issuers": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IssuersResponse",
+      "type": "object",
+      "required": [
+        "issuers"
+      ],
+      "properties": {
+        "issuers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssuerRecord"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "definitions": {
+        "Addr": {
+          "description": "A human readable address.\n\nIn Cosmos, this is typically bech32 encoded. But for multi-chain smart contracts no assumptions should be made other than being UTF-8 encoded and of reasonable length.\n\nThis type represents a validated address. It can be created in the following ways 1. Use `Addr::unchecked(input)` 2. Use `let checked: Addr = deps.api.addr_validate(input)?` 3. Use `let checked: Addr = deps.api.addr_humanize(canonical_addr)?` 4. Deserialize from JSON. This must only be done from JSON that was validated before such as a contract's state. `Addr` must not be used in messages sent by the user because this would result in unvalidated instances.\n\nThis type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.",
+          "type": "string"
+        },
+        "IssuerRecord": {
+          "type": "object",
+          "required": [
+            "active",
+            "address",
+            "credential_types",
+            "description",
+            "name",
+            "registered_at"
+          ],
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "address": {
+              "$ref": "#/definitions/Addr"
+            },
+            "credential_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "registered_at": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "revocation_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "revoked_at": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# Rust
+target/
+**/*.rs.bk
+
+# TypeScript / Node
+sdk/ts/node_modules/
+sdk/ts/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Environment
+.env
+.env.*
+
+# Docker volumes
+.docker/

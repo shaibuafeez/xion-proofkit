@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QueryMsg",
+  "oneOf": [
+    {
+      "description": "Check if an issuer is authorized for a specific credential type.",
+      "type": "object",
+      "required": [
+        "is_authorized"
+      ],
+      "properties": {
+        "is_authorized": {
+          "type": "object",
+          "required": [
+            "credential_type",
+            "issuer"
+          ],
+          "properties": {
+            "credential_type": {
+              "type": "string"
+            },
+            "issuer": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Get details of a specific issuer.",
+      "type": "object",
+      "required": [
+        "issuer"
+      ],
+      "properties": {
+        "issuer": {
+          "type": "object",
+          "required": [
+            "issuer"
+          ],
+          "properties": {
+            "issuer": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "List all registered issuers.",
+      "type": "object",
+      "required": [
+        "list_issuers"
+      ],
+      "properties": {
+        "list_issuers": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "start_after": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "List issuers authorized for a specific credential type.",
+      "type": "object",
+      "required": [
+        "issuers_by_type"
+      ],
+      "properties": {
+        "issuers_by_type": {
+          "type": "object",
+          "required": [
+            "credential_type"
+          ],
+          "properties": {
+            "credential_type": {
+              "type": "string"
+            },
+            "limit": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "start_after": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Get the current admin address.",
+      "type": "object",
+      "required": [
+        "admin"
+      ],
+      "properties": {
+        "admin": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

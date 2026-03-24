@@ -1,0 +1,25 @@
+[package]
+name = "verifier"
+version = "0.1.0"
+edition = "2021"
+description = "ProofKit verification engine for ZK and DKIM credential proofs"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+library = []
+
+[dependencies]
+cosmwasm-std = { workspace = true }
+cosmwasm-schema = { workspace = true }
+cw-storage-plus = { workspace = true }
+cw2 = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+cosmwasm-crypto = { workspace = true }
+proofkit-types = { workspace = true }
+
+[dev-dependencies]
+cosmwasm-std = { workspace = true, features = ["staking"] }

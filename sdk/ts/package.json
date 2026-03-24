@@ -1,0 +1,47 @@
+{
+  "name": "@proofkit/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK and CLI for ProofKit verified credential contracts on XION",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "proofkit": "dist/cli/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "xion",
+    "cosmwasm",
+    "verifiable-credentials",
+    "zero-knowledge",
+    "dkim",
+    "blockchain",
+    "proofkit",
+    "cosmos"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proofkit/proofkit.git",
+    "directory": "sdk/ts"
+  },
+  "homepage": "https://github.com/proofkit/proofkit#readme",
+  "bugs": {
+    "url": "https://github.com/proofkit/proofkit/issues"
+  },
+  "author": "",
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/proto-signing": "^0.32.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "license": "MIT"
+}

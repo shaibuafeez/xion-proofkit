@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExecuteMsg",
+  "oneOf": [
+    {
+      "description": "Register a new credential schema (admin only).",
+      "type": "object",
+      "required": [
+        "register_schema"
+      ],
+      "properties": {
+        "register_schema": {
+          "type": "object",
+          "required": [
+            "credential_types",
+            "description",
+            "name",
+            "schema_id",
+            "verifier_contract"
+          ],
+          "properties": {
+            "credential_types": {
+              "description": "The credential types this schema supports (e.g., [\"age\", \"identity\"]).",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "description": "Description of what this credential proves.",
+              "type": "string"
+            },
+            "name": {
+              "description": "Human-readable name.",
+              "type": "string"
+            },
+            "schema_id": {
+              "description": "Unique identifier for the schema (e.g., \"age_verification\").",
+              "type": "string"
+            },
+            "verifier_contract": {
+              "description": "Address of the verifier contract that validates proofs for this schema.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Record a verified proof on-chain (called by the verifier contract).",
+      "type": "object",
+      "required": [
+        "record_proof"
+      ],
+      "properties": {
+        "record_proof": {
+          "type": "object",
+          "required": [
+            "issuer",
+            "proof_hash",
+            "schema_id",
+            "subject"
+          ],
+          "properties": {
+            "expires_at": {
+              "description": "Optional expiration timestamp (seconds since epoch).",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "issuer": {
+              "description": "Address of the issuer who signed the credential.",
+              "type": "string"
+            },
+            "proof_hash": {
+              "description": "Hash of the proof data for auditability.",
+              "type": "string"
+            },
+            "schema_id": {
+              "description": "Schema this proof belongs to.",
+              "type": "string"
+            },
+            "subject": {
+              "description": "The address whose credential was verified.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Revoke a previously recorded proof (issuer or admin only).",
+      "type": "object",
+      "required": [
+        "revoke_proof"
+      ],
+      "properties": {
+        "revoke_proof": {
+          "type": "object",
+          "required": [
+            "proof_id",
+            "reason"
+          ],
+          "properties": {
+            "proof_id": {
+              "description": "The proof record ID to revoke.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "reason": {
+              "description": "Reason for revocation.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Update the admin address (admin only).",
+      "type": "object",
+      "required": [
+        "update_admin"
+      ],
+      "properties": {
+        "update_admin": {
+          "type": "object",
+          "required": [
+            "new_admin"
+          ],
+          "properties": {
+            "new_admin": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

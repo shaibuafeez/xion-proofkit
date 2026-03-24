@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExecuteMsg",
+  "oneOf": [
+    {
+      "description": "Register a new trusted credential issuer (admin only).",
+      "type": "object",
+      "required": [
+        "register_issuer"
+      ],
+      "properties": {
+        "register_issuer": {
+          "type": "object",
+          "required": [
+            "credential_types",
+            "description",
+            "issuer",
+            "name"
+          ],
+          "properties": {
+            "credential_types": {
+              "description": "Credential types this issuer is authorized to validate.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "description": "Description of the issuer organization.",
+              "type": "string"
+            },
+            "issuer": {
+              "description": "The issuer's on-chain address.",
+              "type": "string"
+            },
+            "name": {
+              "description": "Human-readable name for the issuer.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Revoke a previously registered issuer (admin only).",
+      "type": "object",
+      "required": [
+        "revoke_issuer"
+      ],
+      "properties": {
+        "revoke_issuer": {
+          "type": "object",
+          "required": [
+            "issuer",
+            "reason"
+          ],
+          "properties": {
+            "issuer": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Update issuer details (admin only).",
+      "type": "object",
+      "required": [
+        "update_issuer"
+      ],
+      "properties": {
+        "update_issuer": {
+          "type": "object",
+          "required": [
+            "issuer"
+          ],
+          "properties": {
+            "credential_types": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "issuer": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Update the admin address (admin only).",
+      "type": "object",
+      "required": [
+        "update_admin"
+      ],
+      "properties": {
+        "update_admin": {
+          "type": "object",
+          "required": [
+            "new_admin"
+          ],
+          "properties": {
+            "new_admin": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}
