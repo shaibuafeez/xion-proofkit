@@ -27,12 +27,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/proofkit/proofkit.git",
+    "url": "https://github.com/shaibuafeez/xion-proofkit.git",
     "directory": "sdk/ts"
   },
-  "homepage": "https://github.com/proofkit/proofkit#readme",
+  "homepage": "https://github.com/shaibuafeez/xion-proofkit#readme",
   "bugs": {
-    "url": "https://github.com/proofkit/proofkit/issues"
+    "url": "https://github.com/shaibuafeez/xion-proofkit/issues"
   },
   "author": "",
   "dependencies": {
