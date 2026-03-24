@@ -33,9 +33,15 @@ COMMANDS:
 
 GLOBAL OPTIONS:
   --rpc <url>         RPC endpoint (or PROOFKIT_RPC env)
-  --mnemonic <m>      Signer mnemonic (or PROOFKIT_MNEMONIC env)
+  --keyfile <path>    Path to file containing mnemonic (or PROOFKIT_KEYFILE env)
   --gas-price <p>     Gas price (default: 0.025uxion)
   --prefix <p>        Bech32 prefix (default: xion)
+
+AUTHENTICATION:
+  The signer mnemonic is read from (in order):
+    1. --keyfile <path>  (or PROOFKIT_KEYFILE env)
+    2. PROOFKIT_MNEMONIC env variable
+  Never pass mnemonics as CLI arguments — they leak into shell history.
 
 CONTRACT ADDRESSES (required for non-deploy commands):
   --registry <addr>   Credential registry address (or PROOFKIT_REGISTRY env)
@@ -66,9 +72,23 @@ function optionalNum(args: string[], flag: string): number | undefined {
   return undefined;
 }
 
+function loadMnemonic(args: string[]): string {
+  // 1. Keyfile (flag or env)
+  const keyfile = optionalArg(args, "--keyfile", "PROOFKIT_KEYFILE");
+  if (keyfile) {
+    return readFileSync(resolve(keyfile), "utf-8").trim();
+  }
+  // 2. Environment variable
+  if (process.env.PROOFKIT_MNEMONIC) {
+    return process.env.PROOFKIT_MNEMONIC;
+  }
+  console.error("Missing mnemonic: set --keyfile <path>, PROOFKIT_KEYFILE, or PROOFKIT_MNEMONIC env");
+  process.exit(1);
+}
+
 async function getSigningClient(args: string[]) {
   const rpc = requireArg(args, "--rpc", "PROOFKIT_RPC");
-  const mnemonic = requireArg(args, "--mnemonic", "PROOFKIT_MNEMONIC");
+  const mnemonic = loadMnemonic(args);
   const gasPrice = optionalArg(args, "--gas-price", undefined, "0.025uxion");
   const prefix = optionalArg(args, "--prefix", undefined, "xion");
 
@@ -131,7 +151,7 @@ async function registerSchema(args: string[]) {
   const schemaId = requireArg(args, "--schema-id");
   const name = requireArg(args, "--name");
   const description = requireArg(args, "--description");
-  const verifierContract = requireArg(args, "--verifier-contract");
+  const verifierContract = optionalArg(args, "--verifier-contract") ?? addresses.verifier;
   const types = requireArg(args, "--credential-types").split(",");
 
   console.log(`Registering schema "${schemaId}"...`);

@@ -48,16 +48,16 @@ export interface ProofRecord {
   proof_hash: string;
   issuer: string;
   verified_at: number;
-  expires_at?: number;
+  expires_at: number | null;
   revoked: boolean;
-  revoked_at?: number;
-  revocation_reason?: string;
+  revoked_at: number | null;
+  revocation_reason: string | null;
 }
 
 export interface IsVerifiedResponse {
   verified: boolean;
-  proof_id?: number;
-  expires_at?: number;
+  proof_id: number | null;
+  expires_at: number | null;
 }
 
 export interface SchemaResponse {
@@ -218,13 +218,13 @@ export interface IssuerRecord {
   credential_types: string[];
   registered_at: number;
   active: boolean;
-  revoked_at?: number;
-  revocation_reason?: string;
+  revoked_at: number | null;
+  revocation_reason: string | null;
 }
 
 export interface IsAuthorizedResponse {
   authorized: boolean;
-  issuer_name?: string;
+  issuer_name: string | null;
 }
 
 export interface IssuerResponse {
