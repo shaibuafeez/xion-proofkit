@@ -1,3 +1,6 @@
 [alias]
 wasm = "build --release --lib --target wasm32-unknown-unknown --workspace --exclude proofkit-integration-tests"
 wasm-debug = "build --lib --target wasm32-unknown-unknown --workspace --exclude proofkit-integration-tests"
+
+[target.wasm32-unknown-unknown]
+rustflags = ["-C", "target-feature=-bulk-memory,-sign-ext,-mutable-globals"]

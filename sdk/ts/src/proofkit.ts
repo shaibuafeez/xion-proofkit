@@ -99,12 +99,10 @@ export class SigningProofKit {
     },
     fee: "auto" | number = "auto",
   ): Promise<{ proofkit: SigningProofKit; addresses: DeployResult }> {
-    // Upload all three contracts
-    const [regUpload, verUpload, issUpload] = await Promise.all([
-      signingClient.upload(sender, wasm.credentialRegistry, fee),
-      signingClient.upload(sender, wasm.verifier, fee),
-      signingClient.upload(sender, wasm.issuerRegistry, fee),
-    ]);
+    // Upload contracts sequentially (parallel uploads cause sequence mismatch)
+    const regUpload = await signingClient.upload(sender, wasm.credentialRegistry, fee);
+    const verUpload = await signingClient.upload(sender, wasm.verifier, fee);
+    const issUpload = await signingClient.upload(sender, wasm.issuerRegistry, fee);
 
     // Instantiate issuer registry first (no dependencies)
     const issuerResult = await signingClient.instantiate(
