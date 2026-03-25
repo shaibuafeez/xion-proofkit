@@ -61,13 +61,13 @@ Once a credential is verified, it lives on-chain until it expires or is revoked.
 ### Install the SDK
 
 ```bash
-npm install @proofkit/sdk
+npm install xion-proofkit
 ```
 
 ### Deploy All Contracts
 
 ```typescript
-import { SigningProofKit } from "@proofkit/sdk";
+import { SigningProofKit } from "xion-proofkit";
 import { readFileSync } from "fs";
 
 const wasm = {
@@ -127,7 +127,7 @@ await proofkit.verifier.verifyEmailCredential(
 ### Query From Any App
 
 ```typescript
-import { ProofKit } from "@proofkit/sdk";
+import { ProofKit } from "xion-proofkit";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 const client = await CosmWasmClient.connect("https://rpc.xion.burnt.com");
@@ -147,7 +147,7 @@ const verified = await pk.isVerified("xion1user...", "age-verification");
 Manage everything from the terminal.
 
 ```bash
-npx @proofkit/sdk --help
+npx xion-proofkit --help
 ```
 
 Configure via environment variables:

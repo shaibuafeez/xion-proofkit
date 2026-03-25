@@ -1,5 +1,5 @@
 {
-  "name": "@proofkit/sdk",
+  "name": "xion-proofkit",
   "version": "0.1.0",
   "description": "TypeScript SDK and CLI for ProofKit verified credential contracts on XION",
   "main": "dist/index.js",
